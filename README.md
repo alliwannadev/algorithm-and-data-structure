@@ -7,4 +7,4 @@
 
 * [Chapter 2. 배열 (Array)](./Chapter2/Chapter2.md)
 
-## 2. 추가 학습 자료
+## 2. 참고 문서
