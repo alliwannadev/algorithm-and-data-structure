@@ -3,8 +3,8 @@
 
 ## 1. 목차
 
-* [Chapter 1. 문자열 조작 (String Manipulation)](./Chapter1/Chapter1)
+* [Chapter 1. 문자열 조작 (String Manipulation)](./Chapter1/Chapter1.md)
 
-* [Chapter 2. 배열 (Array)](./Chapter2/Chapter2)
+* [Chapter 2. 배열 (Array)](./Chapter2/Chapter2.md)
 
 ## 2. 추가 학습 자료
