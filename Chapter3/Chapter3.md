@@ -56,10 +56,26 @@
   }
   ```
 
-### 2-2. LeetCode - 
+### 2-2. LeetCode - Swap Nodes in Pairs
+
+* 값만 교환하는 방식으로 풀이
 
 ```java
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        ListNode cur = head;
 
+        while (cur != null && cur.next != null) {
+            int temp = cur.val;
+            cur.val = cur.next.val;
+            cur.next.val = temp;
+
+            cur = cur.next.next;
+        }
+
+        return head;
+    }
+}
 ```
 
 
