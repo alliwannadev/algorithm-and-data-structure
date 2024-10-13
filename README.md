@@ -11,4 +11,6 @@
 
 * [Chapter 4. 스택, 큐, 덱](./Chapter4/Chapter4.md)
 
+* [Chapter 5. 해시 테이블 (Hash Table)](./Chapter5/Chapter5.md)
+
 ## 2. 참고 문서
