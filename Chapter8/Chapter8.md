@@ -73,9 +73,72 @@
 
 ### 2-1. 프로그래머스 - 배달
 
-```java
-
-```
+* 방법 1. 다익스트라 최단 경로 알고리즘으로 풀이하기
+    
+    ```java
+    import java.util.*;
+    
+    class Solution {
+        public int solution(int N, int[][] road, int K) {
+            List<Node>[] graph = new ArrayList[N + 1];
+            int[] distance = new int[N + 1];
+    
+            for (int i = 1; i <= N; i++) {
+                graph[i] = new ArrayList<>();
+            }
+    
+            for (int i = 0; i < road.length; i++) {
+                graph[road[i][0]].add(new Node(road[i][1], road[i][2]));
+                graph[road[i][1]].add(new Node(road[i][0], road[i][2]));
+            }
+    
+            Arrays.fill(distance, Integer.MAX_VALUE);
+    
+            // 다익스트라 알고리즘을 수행한다.
+            PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.distance - b.distance);
+            pq.add(new Node(1, 0));
+            distance[1] = 0;
+    
+            while (!pq.isEmpty()) {
+                Node curNode = pq.poll();
+    
+                if (distance[curNode.index] < curNode.distance) {
+                    continue;
+                }
+    
+                for (Node nextNode : graph[curNode.index]) {
+                    int cost = distance[curNode.index] + nextNode.distance;
+    
+                    if (cost < distance[nextNode.index]) {
+                        distance[nextNode.index] = cost;
+                        pq.add(new Node(nextNode.index, cost));
+                    }
+                }
+            }
+    
+            int answer = 0;
+    
+            for (int i = 1; i <= N; i++) {
+                if (distance[i] <= K) {
+                    answer++;
+                }
+            }
+    
+            return answer;
+        }
+    }
+    
+    class Node {
+        int index;
+        int distance;
+    
+        Node(int index, int distance) {
+    
+            this.index = index;
+            this.distance = distance;
+        }
+    }
+    ```
 
 ### 2-2. 프로그래머스 - 합승 택시 요금
 
