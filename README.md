@@ -13,4 +13,10 @@
 
 * [Chapter 5. 해시 테이블 (Hash Table)](./Chapter5/Chapter5.md)
 
+* [Chapter 6. 완전 탐색 (Brute Force)](./Chapter6/Chapter6.md)
+
+* [Chapter 7. 그래프 (Graph)](./Chapter7/Chapter7.md)
+
+* [Chapter 8. 다익스트라 알고리즘 (Dijkstra Algorithm)](./Chapter8/Chapter8.md)
+
 ## 2. 참고 문서
