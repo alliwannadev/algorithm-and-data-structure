@@ -143,5 +143,66 @@
 ### 2-2. 프로그래머스 - 합승 택시 요금
 
 ```java
+public class Solution {
+    public int solution(int n, int s, int a, int b, int[][] fares) {
+        int answer = Integer.MAX_VALUE;
+        List<Node>[] graph = new ArrayList[n + 1];
+        for (int i = 1; i <= n; i++) {
+            graph[i] = new ArrayList<>();
+        }
 
+        for (int[] fare : fares) {
+            graph[fare[0]].add(new Node(fare[1], fare[2]));
+            graph[fare[1]].add(new Node(fare[0], fare[2]));
+        }
+
+        int[] costS = dijkstra(graph, n, s); // s 노드에서 출발해서 다른 모든 노드로 가는 최단 경로
+        int[] costA = dijkstra(graph, n, a); // a 노드에서 출발해서 다른 모든 노드로 가는 최단 경로
+        int[] costB = dijkstra(graph, n, b); // b 노드에서 출발해서 다른 모든 노드로 가는 최단 경로
+
+        for (int i = 1; i <= n; i++) { // s -> i까지 합승하고 i -> a와 i -> b 까지는 따로 이동한다.
+            answer = Math.min(
+                    answer,
+                    costS[i] + costA[i] + costB[i]
+            );
+        }
+
+        return answer;
+    }
+
+    public int[] dijkstra(
+            List<Node>[] graph,
+            int n,
+            int start
+    ) {
+        int[] distance = new int[n + 1]; // distance[i] : start -> i까지의 거리
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(node -> node.distance));
+        pq.add(new Node(start, 0));
+        distance[start] = 0;
+
+        while (!pq.isEmpty()) {
+            Node curNode = pq.poll();
+            for (Node nextNode : graph[curNode.index]) {
+                int cost = curNode.distance + nextNode.distance;
+                if (cost < distance[nextNode.index]) {
+                    distance[nextNode.index] = cost;
+                    pq.add(new Node(nextNode.index, cost));
+                }
+            }
+        }
+
+        return distance;
+    }
+
+    class Node {
+        int index;
+        int distance;
+
+        Node(int index, int distance) {
+            this.index = index;
+            this.distance = distance;
+        }
+    }
+}
 ```
