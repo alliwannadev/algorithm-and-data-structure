@@ -73,15 +73,14 @@
 
 ### 2-1. 프로그래머스 - 배달
 
-* 방법 1. 다익스트라 최단 경로 알고리즘으로 풀이하기
+* 다익스트라 최단 경로 알고리즘으로 풀이하기
     
     ```java
     import java.util.*;
     
     class Solution {
         public int solution(int N, int[][] road, int K) {
-            List<Node>[] graph = new ArrayList[N + 1];
-            int[] distance = new int[N + 1];
+            List<Node>[] graph = new ArrayList[N + 1]; // 인접 리스트
     
             for (int i = 1; i <= N; i++) {
                 graph[i] = new ArrayList<>();
@@ -92,30 +91,9 @@
                 graph[road[i][1]].add(new Node(road[i][0], road[i][2]));
             }
     
-            Arrays.fill(distance, Integer.MAX_VALUE);
+            int[] distance = dijkstra(graph, N, 1);
     
-            // 다익스트라 알고리즘을 수행한다.
-            PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.distance - b.distance);
-            pq.add(new Node(1, 0));
-            distance[1] = 0;
-    
-            while (!pq.isEmpty()) {
-                Node curNode = pq.poll();
-    
-                if (distance[curNode.index] < curNode.distance) {
-                    continue;
-                }
-    
-                for (Node nextNode : graph[curNode.index]) {
-                    int cost = distance[curNode.index] + nextNode.distance;
-    
-                    if (cost < distance[nextNode.index]) {
-                        distance[nextNode.index] = cost;
-                        pq.add(new Node(nextNode.index, cost));
-                    }
-                }
-            }
-    
+            // 1번 마을에서 다른 모든 마을로 가는데 드는 비용이 K 이하인 경우를 카운트한다.
             int answer = 0;
     
             for (int i = 1; i <= N; i++) {
@@ -126,83 +104,132 @@
     
             return answer;
         }
-    }
     
-    class Node {
-        int index;
-        int distance;
+        public int[] dijkstra(
+                List<Node>[] graph,
+                int N,
+                int start
+        ) {
+            int[] distance = new int[N + 1];
+        
+            Arrays.fill(distance, Integer.MAX_VALUE);
     
-        Node(int index, int distance) {
+        
+            PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(node -> node.distance));
+            pq.add(new Node(start, 0));
+            distance[start] = 0;
     
-            this.index = index;
-            this.distance = distance;
+            while (!pq.isEmpty()) {
+                Node curNode = pq.poll();
+        
+                if (distance[curNode.number] < curNode.distance) {
+                    continue;
+                }
+            
+                for (Node nextNode : graph[curNode.number]) {
+                    int cost = distance[curNode.number] + nextNode.distance;
+    
+                    if (cost < distance[nextNode.number]) {
+                        distance[nextNode.number] = cost;
+                        pq.add(new Node(nextNode.number, cost));
+                    }
+                }
+            }
+    
+            return distance;
+        }
+    
+        static class Node {
+            int number; // 노드 번호
+            int distance; // 거리
+    
+            Node(int number, int distance) {
+                this.number = number;
+                this.distance = distance;
+            }
         }
     }
     ```
 
 ### 2-2. 프로그래머스 - 합승 택시 요금
 
-```java
-public class Solution {
-    public int solution(int n, int s, int a, int b, int[][] fares) {
-        int answer = Integer.MAX_VALUE;
-        List<Node>[] graph = new ArrayList[n + 1];
-        for (int i = 1; i <= n; i++) {
-            graph[i] = new ArrayList<>();
+* 다익스트라 최단 경로 알고리즘으로 풀이하기
+    
+    ```java
+    public class Solution {
+        public int solution(int n, int s, int a, int b, int[][] fares) {
+            int answer = Integer.MAX_VALUE;
+            List<Node>[] graph = new ArrayList[n + 1];
+            for (int i = 1; i <= n; i++) {
+                graph[i] = new ArrayList<>();
+            }
+    
+            for (int[] fare : fares) {
+                graph[fare[0]].add(new Node(fare[1], fare[2]));
+                graph[fare[1]].add(new Node(fare[0], fare[2]));
+            }
+    
+            int[] costS = dijkstra(graph, n, s); // s 노드에서 출발해서 다른 모든 노드로 가는 최단 경로
+            int[] costA = dijkstra(graph, n, a); // a 노드에서 출발해서 다른 모든 노드로 가는 최단 경로
+            int[] costB = dijkstra(graph, n, b); // b 노드에서 출발해서 다른 모든 노드로 가는 최단 경로
+    
+            for (int i = 1; i <= n; i++) { // s -> i까지 합승하고 i -> a와 i -> b 까지는 따로 이동한다.
+                answer = Math.min(
+                        answer,
+                        costS[i] + costA[i] + costB[i]
+                );
+            }
+    
+            return answer;
         }
-
-        for (int[] fare : fares) {
-            graph[fare[0]].add(new Node(fare[1], fare[2]));
-            graph[fare[1]].add(new Node(fare[0], fare[2]));
-        }
-
-        int[] costS = dijkstra(graph, n, s); // s 노드에서 출발해서 다른 모든 노드로 가는 최단 경로
-        int[] costA = dijkstra(graph, n, a); // a 노드에서 출발해서 다른 모든 노드로 가는 최단 경로
-        int[] costB = dijkstra(graph, n, b); // b 노드에서 출발해서 다른 모든 노드로 가는 최단 경로
-
-        for (int i = 1; i <= n; i++) { // s -> i까지 합승하고 i -> a와 i -> b 까지는 따로 이동한다.
-            answer = Math.min(
-                    answer,
-                    costS[i] + costA[i] + costB[i]
-            );
-        }
-
-        return answer;
-    }
-
-    public int[] dijkstra(
-            List<Node>[] graph,
-            int n,
-            int start
-    ) {
-        int[] distance = new int[n + 1]; // distance[i] : start -> i까지의 거리
-        Arrays.fill(distance, Integer.MAX_VALUE);
-        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(node -> node.distance));
-        pq.add(new Node(start, 0));
-        distance[start] = 0;
-
-        while (!pq.isEmpty()) {
-            Node curNode = pq.poll();
-            for (Node nextNode : graph[curNode.index]) {
-                int cost = curNode.distance + nextNode.distance;
-                if (cost < distance[nextNode.index]) {
-                    distance[nextNode.index] = cost;
-                    pq.add(new Node(nextNode.index, cost));
+    
+        public int[] dijkstra(
+                List<Node>[] graph,
+                int n,
+                int start
+        ) {
+            int[] distance = new int[n + 1]; // distance[i] : start -> i까지의 거리
+            Arrays.fill(distance, Integer.MAX_VALUE);
+            PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(node -> node.distance));
+            pq.add(new Node(start, 0));
+            distance[start] = 0;
+    
+            while (!pq.isEmpty()) {
+                Node curNode = pq.poll();
+                for (Node nextNode : graph[curNode.index]) {
+                    int cost = curNode.distance + nextNode.distance;
+                    if (cost < distance[nextNode.index]) {
+                        distance[nextNode.index] = cost;
+                        pq.add(new Node(nextNode.index, cost));
+                    }
                 }
             }
+    
+            return distance;
         }
-
-        return distance;
-    }
-
-    class Node {
-        int index;
-        int distance;
-
-        Node(int index, int distance) {
-            this.index = index;
-            this.distance = distance;
+    
+        class Node {
+            int index;
+            int distance;
+    
+            Node(int index, int distance) {
+                this.index = index;
+                this.distance = distance;
+            }
         }
     }
-}
-```
+    ```
+    
+    * s에서 부터 x 지점까지 합승한다고 가정하자.
+    
+        * s 지점은 합승하여 이동하는 구간이다.
+    
+        * x 지점은 합승이 끝나는 지점이다.
+    
+    * (s -> x까지의 거리) + (x -> a까지의 거리) + (x -> b까지의 거리)는 전체 거리의 합이다.
+    
+        * 여기서 x 지점을 1 ~ N까지 대입 했을 때의 최소 값이 answer가 된다.
+        
+    * 이때 모든 경로는 방향이 없으므로, x -> a는 a -> x와 동일하다. 
+    
+    * 따라서 a, b를 출발점으로 하여 모든 경로까지의 거리를 구하면 된다.
